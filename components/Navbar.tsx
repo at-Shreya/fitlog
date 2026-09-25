@@ -68,22 +68,28 @@ export default function Navbar({ planCount = 0, savedCount = 0 }: NavbarProps) {
         {/* Right Side Status */}
         <div className="flex items-center gap-3 text-xs">
           {/* Plan */}
-          <div className="flex items-center gap-1.5 text-gray-300">
+          <Link
+            href="/my-plan"
+            className="flex items-center gap-1.5 text-gray-300 transition hover:text-white"
+          >
             <span>Plan</span>
 
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#ccff00] px-1.5 font-bold text-black">
               {planCount}
             </span>
-          </div>
+          </Link>
 
           {/* Saved */}
-          <div className="flex items-center gap-1.5 text-gray-300">
+          <Link
+            href="/my-plan"
+            className="flex items-center gap-1.5 text-gray-300 transition hover:text-white"
+          >
             <span>Saved</span>
 
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full border border-[#3a3f46] px-1.5 text-gray-300">
               {savedCount}
             </span>
-          </div>
+          </Link>
         </div>
       </div>
     </nav>
