@@ -32,6 +32,7 @@ export default function WorkoutDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error">("success");
 
   useEffect(() => {
     const fetchWorkout = async () => {
@@ -60,9 +61,15 @@ export default function WorkoutDetailsPage() {
   const handleAddToPlan = () => {
     if (!workout) return;
 
-    addToPlan(workout);
+    const added = addToPlan(workout);
 
-    setToast("Added to today's plan");
+    if (added) {
+      setToastType("success");
+      setToast("Added to today's plan");
+    } else {
+      setToastType("error");
+      setToast("Already added to today's plan");
+    }
 
     setTimeout(() => {
       setToast("");
@@ -72,9 +79,15 @@ export default function WorkoutDetailsPage() {
   const handleSaveForLater = () => {
     if (!workout) return;
 
-    saveForLater(workout);
+    const savedSuccessfully = saveForLater(workout);
 
-    setToast("Saved for later");
+    if (savedSuccessfully) {
+      setToastType("success");
+      setToast("Saved for later");
+    } else {
+      setToastType("error");
+      setToast("Already saved for later");
+    }
 
     setTimeout(() => {
       setToast("");
@@ -92,9 +105,7 @@ export default function WorkoutDetailsPage() {
   if (error || !workout) {
     return (
       <main className="mx-auto flex min-h-[70vh] max-w-[1400px] flex-col items-center justify-center px-4 text-center">
-        <p className="text-sm text-red-400">
-          {error || "Workout not found."}
-        </p>
+        <p className="text-sm text-red-400">{error || "Workout not found."}</p>
 
         <Link
           href="/"
@@ -111,7 +122,14 @@ export default function WorkoutDetailsPage() {
       {/* Toast */}
       {toast && (
         <div className="fixed top-6 left-1/2 z-50 -translate-x-1/2 rounded-md border border-[#3a3f46] bg-[#181c22] px-5 py-3 text-xs font-medium text-white shadow-xl">
-          <span className="mr-2 text-[#ccff00]">✓</span>
+          <span
+            className={`mr-2 ${
+              toastType === "success" ? "text-[#ccff00]" : "text-red-400"
+            }`}
+          >
+            {toastType === "success" ? "✓" : "✕"}
+          </span>
+
           {toast}
         </div>
       )}
@@ -192,18 +210,14 @@ export default function WorkoutDetailsPage() {
 
               <div className="grid grid-cols-2 border-b border-[#242830]">
                 <div className="border-r border-[#242830] p-4">
-                  <p className="text-[10px] uppercase text-gray-500">
-                    Sets
-                  </p>
+                  <p className="text-[10px] uppercase text-gray-500">Sets</p>
                   <p className="mt-1 text-sm font-medium text-white">
                     {workout.sets}
                   </p>
                 </div>
 
                 <div className="p-4">
-                  <p className="text-[10px] uppercase text-gray-500">
-                    Reps
-                  </p>
+                  <p className="text-[10px] uppercase text-gray-500">Reps</p>
                   <p className="mt-1 text-sm font-medium text-white">
                     {workout.reps}
                   </p>
@@ -230,9 +244,7 @@ export default function WorkoutDetailsPage() {
                 </div>
 
                 <div className="p-4">
-                  <p className="text-[10px] uppercase text-gray-500">
-                    Rating
-                  </p>
+                  <p className="text-[10px] uppercase text-gray-500">Rating</p>
                   <p className="mt-1 text-sm font-medium text-white">
                     ★ {workout.rating}
                   </p>

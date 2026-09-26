@@ -22,21 +22,15 @@ interface FitLogContextType {
   plan: Workout[];
   saved: Workout[];
   isLoaded: boolean;
-  addToPlan: (workout: Workout) => void;
-  saveForLater: (workout: Workout) => void;
+  addToPlan: (workout: Workout) => boolean;
+  saveForLater: (workout: Workout) => boolean;
   removeFromPlan: (id: number) => void;
   removeFromSaved: (id: number) => void;
 }
 
-const FitLogContext = createContext<FitLogContextType | undefined>(
-  undefined
-);
+const FitLogContext = createContext<FitLogContextType | undefined>(undefined);
 
-export function FitLogProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function FitLogProvider({ children }: { children: React.ReactNode }) {
   const [plan, setPlan] = useState<Workout[]>([]);
   const [saved, setSaved] = useState<Workout[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -82,34 +76,33 @@ export function FitLogProvider({
 
   // Add workout to today's plan
   const addToPlan = (workout: Workout) => {
-    const alreadyAdded = plan.some(
-      (item) => item.id === workout.id
-    );
+    const alreadyAdded = plan.some((item) => item.id === workout.id);
 
     if (alreadyAdded) {
-      return;
+      return false;
     }
 
     if (plan.length >= 5) {
-      return;
+      return false;
     }
 
     setPlan((currentPlan) => [...currentPlan, workout]);
+
+    return true;
   };
 
   // Save workout for later
   const saveForLater = (workout: Workout) => {
-    const alreadySaved = saved.some(
-      (item) => item.id === workout.id
-    );
+    const alreadySaved = saved.some((item) => item.id === workout.id);
 
     if (alreadySaved) {
-      return;
+      return false;
     }
 
     setSaved((currentSaved) => [...currentSaved, workout]);
-  };
 
+    return true;
+  };
   // Remove workout from today's plan
   const removeFromPlan = (id: number) => {
     setPlan((currentPlan) =>
@@ -145,9 +138,7 @@ export function useFitLog() {
   const context = useContext(FitLogContext);
 
   if (!context) {
-    throw new Error(
-      "useFitLog must be used inside FitLogProvider"
-    );
+    throw new Error("useFitLog must be used inside FitLogProvider");
   }
 
   return context;

@@ -9,15 +9,12 @@ type Tab = "today" | "saved";
 type SortOption = "duration" | "calories" | "rating";
 
 export default function MyPlanPage() {
-  const {
-    plan,
-    saved,
-    isLoaded,
-    removeFromPlan,
-    removeFromSaved,
-  } = useFitLog();
+  const { plan, saved, isLoaded, removeFromPlan, removeFromSaved } =
+    useFitLog();
 
   const [activeTab, setActiveTab] = useState<Tab>("today");
+
+  const [toast, setToast] = useState("");
 
   // Default sort option is Duration
   const [sortBy, setSortBy] = useState<SortOption>("duration");
@@ -52,10 +49,23 @@ export default function MyPlanPage() {
   // Mark workout as done
   const handleMarkAsDone = (id: number) => {
     removeFromPlan(id);
+
+    setToast("Workout marked as done");
+
+    setTimeout(() => {
+      setToast("");
+    }, 2500);
   };
 
   return (
     <main className="mx-auto max-w-[1400px] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      {toast && (
+        <div className="fixed top-6 left-1/2 z-50 -translate-x-1/2 rounded-md border border-[#3a3f46] bg-[#181c22] px-5 py-3 text-xs font-medium text-white shadow-xl">
+          <span className="mr-2 text-[#ccff00]">✓</span>
+          {toast}
+        </div>
+      )}
+      
       {/* Page Header */}
       <div className="mb-8">
         <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ccff00]">
@@ -129,7 +139,6 @@ export default function MyPlanPage() {
                 }`}
               >
                 Today&apos;s Plan
-
                 {activeTab === "today" && (
                   <span className="absolute bottom-0 left-0 h-0.5 w-full bg-[#ccff00]" />
                 )}
@@ -146,7 +155,6 @@ export default function MyPlanPage() {
                 }`}
               >
                 Saved
-
                 {activeTab === "saved" && (
                   <span className="absolute bottom-0 left-0 h-0.5 w-full bg-[#ccff00]" />
                 )}
@@ -287,6 +295,7 @@ export default function MyPlanPage() {
                               onClick={() => handleMarkAsDone(workout.id)}
                               className="rounded-md border border-[#3a3f46] px-5 py-3 text-[10px] font-bold uppercase text-gray-300 transition hover:border-[#ccff00] hover:text-white"
                             >
+                              <span className="mr-2">✓</span>
                               Mark as Done
                             </button>
                           )}
@@ -294,11 +303,19 @@ export default function MyPlanPage() {
                           {/* Remove */}
                           <button
                             type="button"
-                            onClick={() =>
-                              activeTab === "today"
-                                ? removeFromPlan(workout.id)
-                                : removeFromSaved(workout.id)
-                            }
+                            onClick={() => {
+                              if (activeTab === "today") {
+                                removeFromPlan(workout.id);
+                                setToast("Workout removed from your plan");
+                              } else {
+                                removeFromSaved(workout.id);
+                                setToast("Workout removed from saved");
+                              }
+
+                              setTimeout(() => {
+                                setToast("");
+                              }, 2500);
+                            }}
                             className="flex h-10 w-10 items-center justify-center rounded-md border border-[#3a3f46] text-sm text-gray-500 transition hover:border-red-500 hover:text-red-400"
                             aria-label={`Remove ${workout.name}`}
                           >
