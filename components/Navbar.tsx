@@ -1,27 +1,18 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+import { useFitLog } from "@/context/FitLogContext";
 
 const navLinks = [
-  {
-    name: "Workouts",
-    href: "/",
-  },
-  {
-    name: "My Plan",
-    href: "/my-plan",
-  },
+  { name: "Workouts", href: "/" },
+  { name: "My Plan", href: "/my-plan" },
 ];
 
-interface NavbarProps {
-  planCount?: number;
-  savedCount?: number;
-}
-
-export default function Navbar({ planCount = 0, savedCount = 0 }: NavbarProps) {
+export default function Navbar() {
   const pathname = usePathname();
+  const { plan, saved, isLoaded } = useFitLog();
 
   return (
     <nav className="border-b border-[#202329] bg-[#0d0f12]">
@@ -41,7 +32,7 @@ export default function Navbar({ planCount = 0, savedCount = 0 }: NavbarProps) {
           </span>
         </Link>
 
-        {/* Navigation Links */}
+        {/* Navigation */}
         <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 sm:flex">
           {navLinks.map((link) => {
             const isActive =
@@ -65,9 +56,8 @@ export default function Navbar({ planCount = 0, savedCount = 0 }: NavbarProps) {
           })}
         </div>
 
-        {/* Right Side Status */}
+        {/* Plan and Saved */}
         <div className="flex items-center gap-3 text-xs">
-          {/* Plan */}
           <Link
             href="/my-plan"
             className="flex items-center gap-1.5 text-gray-300 transition hover:text-white"
@@ -75,11 +65,10 @@ export default function Navbar({ planCount = 0, savedCount = 0 }: NavbarProps) {
             <span>Plan</span>
 
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#ccff00] px-1.5 font-bold text-black">
-              {planCount}
+              {isLoaded ? plan.length : 0}
             </span>
           </Link>
 
-          {/* Saved */}
           <Link
             href="/my-plan"
             className="flex items-center gap-1.5 text-gray-300 transition hover:text-white"
@@ -87,7 +76,7 @@ export default function Navbar({ planCount = 0, savedCount = 0 }: NavbarProps) {
             <span>Saved</span>
 
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full border border-[#3a3f46] px-1.5 text-gray-300">
-              {savedCount}
+              {isLoaded ? saved.length : 0}
             </span>
           </Link>
         </div>
