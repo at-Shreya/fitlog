@@ -110,7 +110,7 @@ export default function WorkoutDetailsPage() {
     <main className="mx-auto max-w-[1400px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-md border border-[#3a3f46] bg-[#181c22] px-5 py-3 text-xs font-medium text-white shadow-xl">
+        <div className="fixed top-6 left-1/2 z-50 -translate-x-1/2 rounded-md border border-[#3a3f46] bg-[#181c22] px-5 py-3 text-xs font-medium text-white shadow-xl">
           <span className="mr-2 text-[#ccff00]">✓</span>
           {toast}
         </div>
