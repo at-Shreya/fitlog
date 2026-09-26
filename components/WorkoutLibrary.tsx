@@ -18,6 +18,7 @@ export default function WorkoutLibrary() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchWorkouts = async () => {
@@ -46,6 +47,20 @@ export default function WorkoutLibrary() {
     fetchWorkouts();
   }, []);
 
+  const filteredWorkouts = workouts.filter((workout) => {
+    const searchText = search.toLowerCase().trim();
+
+    if (!searchText) return true;
+
+    const matchesName = workout.name.toLowerCase().includes(searchText);
+
+    const matchesTag = workout.muscleGroups.some((muscle) =>
+      muscle.toLowerCase().includes(searchText)
+    );
+
+    return matchesName || matchesTag;
+  });
+
   return (
     <section
       id="library"
@@ -63,6 +78,17 @@ export default function WorkoutLibrary() {
         <p className="mt-2 text-sm text-gray-500 sm:text-base">
           Twelve lifts covering every major muscle group.
         </p>
+
+        {/* Search */}
+        <div className="mt-6 max-w-md">
+          <input
+            type="text"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search by workout name or muscle..."
+            className="w-full rounded-md border border-[#343941] bg-[#15181e] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-600 transition focus:border-[#ccff00]"
+          />
+        </div>
       </div>
 
       {/* Loading Animation */}
@@ -85,21 +111,31 @@ export default function WorkoutLibrary() {
 
       {/* Workout Cards */}
       {!loading && !error && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {workouts.map((workout) => (
-            <WorkoutCard
-              key={workout.id}
-              id={workout.id}
-              name={workout.name}
-              image={workout.image}
-              muscleGroups={workout.muscleGroups}
-              equipment={workout.equipment}
-              duration={workout.duration}
-              caloriesBurned={workout.caloriesBurned}
-              rating={workout.rating}
-            />
-          ))}
-        </div>
+        <>
+          {filteredWorkouts.length > 0 ? (
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredWorkouts.map((workout) => (
+                <WorkoutCard
+                  key={workout.id}
+                  id={workout.id}
+                  name={workout.name}
+                  image={workout.image}
+                  muscleGroups={workout.muscleGroups}
+                  equipment={workout.equipment}
+                  duration={workout.duration}
+                  caloriesBurned={workout.caloriesBurned}
+                  rating={workout.rating}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-[#242830] bg-[#15181e] p-8 text-center">
+              <p className="text-sm font-medium text-gray-400">
+                No workouts found.
+              </p>
+            </div>
+          )}
+        </>
       )}
     </section>
   );
