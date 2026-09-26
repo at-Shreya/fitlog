@@ -32,6 +32,9 @@ export default function WorkoutLibrary() {
 
         const data: Workout[] = await response.json();
 
+        // Keep the loader visible for a short time
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         setWorkouts(data);
       } catch (error) {
         setError("Could not load workouts.");
@@ -48,7 +51,6 @@ export default function WorkoutLibrary() {
       id="library"
       className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
     >
-      {/* Section Heading */}
       <div className="mb-8 sm:mb-10">
         <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-[#ccff00]">
           WORKOUTS
@@ -63,10 +65,14 @@ export default function WorkoutLibrary() {
         </p>
       </div>
 
-      {/* Loading */}
+      {/* Loading Animation */}
       {loading && (
-        <div className="py-16 text-center text-sm text-gray-500">
-          Loading workouts...
+        <div className="flex min-h-[400px] flex-col items-center justify-center">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#2a2f36] border-t-[#ccff00]" />
+
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
+            Loading workouts...
+          </p>
         </div>
       )}
 
@@ -77,7 +83,7 @@ export default function WorkoutLibrary() {
         </div>
       )}
 
-      {/* Workout Grid */}
+      {/* Workout Cards */}
       {!loading && !error && (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {workouts.map((workout) => (
