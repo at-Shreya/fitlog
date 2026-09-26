@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useFitLog } from "@/context/FitLogContext";
 
 type Tab = "today" | "saved";
+type SortOption = "duration" | "calories" | "rating";
 
 export default function MyPlanPage() {
   const {
@@ -17,6 +18,9 @@ export default function MyPlanPage() {
   } = useFitLog();
 
   const [activeTab, setActiveTab] = useState<Tab>("today");
+
+  // Default sort option is Duration
+  const [sortBy, setSortBy] = useState<SortOption>("duration");
 
   const currentWorkouts = activeTab === "today" ? plan : saved;
 
@@ -31,6 +35,19 @@ export default function MyPlanPage() {
     (total, workout) => total + workout.caloriesBurned,
     0
   );
+
+  // Sort current list
+  const sortedWorkouts = [...currentWorkouts].sort((a, b) => {
+    if (sortBy === "duration") {
+      return a.duration - b.duration;
+    }
+
+    if (sortBy === "calories") {
+      return a.caloriesBurned - b.caloriesBurned;
+    }
+
+    return a.rating - b.rating;
+  });
 
   // Mark workout as done
   const handleMarkAsDone = (id: number) => {
@@ -97,8 +114,9 @@ export default function MyPlanPage() {
             </div>
           </section>
 
-          {/* Tabs */}
-          <div className="mt-10 border-b border-[#242830]">
+          {/* Tabs + Sort */}
+          <div className="mt-10 flex flex-col gap-5 border-b border-[#242830] sm:flex-row sm:items-end sm:justify-between">
+            {/* Tabs */}
             <div className="flex gap-6">
               {/* Today's Plan */}
               <button
@@ -134,11 +152,43 @@ export default function MyPlanPage() {
                 )}
               </button>
             </div>
+
+            {/* Sort By */}
+            <div className="pb-4">
+              <div className="relative">
+                <label
+                  htmlFor="sort"
+                  className="mr-3 text-[10px] font-bold uppercase tracking-[0.15em] text-gray-500"
+                >
+                  Sort By
+                </label>
+
+                <div className="relative inline-block">
+                  <select
+                    id="sort"
+                    value={sortBy}
+                    onChange={(event) =>
+                      setSortBy(event.target.value as SortOption)
+                    }
+                    className="w-40 appearance-none rounded-md border border-[#343941] bg-[#15181e] px-4 py-2.5 pr-9 text-xs font-medium text-white outline-none transition focus:border-[#ccff00]"
+                  >
+                    <option value="duration">Duration</option>
+                    <option value="calories">Calories</option>
+                    <option value="rating">Rating</option>
+                  </select>
+
+                  {/* Chevron */}
+                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-400">
+                    ▼
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Workout List / Empty State */}
           <section className="mt-7">
-            {currentWorkouts.length === 0 ? (
+            {sortedWorkouts.length === 0 ? (
               /* Empty State */
               <div className="flex min-h-[360px] flex-col items-center justify-center rounded-lg border border-dashed border-[#30353d] bg-[#15181e] px-6 text-center">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#ccff00]">
@@ -159,7 +209,7 @@ export default function MyPlanPage() {
             ) : (
               /* Workout Cards */
               <div className="space-y-4">
-                {currentWorkouts.map((workout) => (
+                {sortedWorkouts.map((workout) => (
                   <div
                     key={workout.id}
                     className="overflow-hidden rounded-lg border border-[#242830] bg-[#15181e]"
